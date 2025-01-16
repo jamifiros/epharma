@@ -4,41 +4,34 @@
 
 @section('content')
 <div class="main-content">
-        <!-- Dashboard Content -->
-        <div class="container mt-4">
-            <h1>Welcome to the Admin Dashboard</h1>
-            <p>Use the sidebar to navigate through different sections.</p>
 
-            <!-- Example Cards -->
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Users</h5>
-                            <p class="card-text">Manage your users here.</p>
-                            <a href="#" class="btn btn-green">Go to Users</a>
-                        </div>
+    <!-- Dashboard Content -->
+    <div class="container mt-4">
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                        <i class="fa-solid fa-users"></i>
+                            Users</h5>
+                        <p class="card-text">Manage your users here.</p>
+                        <a href="{{ route('admin.users') }}" class="btn btn-green">Go to Users</a>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">medicines</h5>
-                            <p class="card-text">View system reports.</p>
-                            <a href="#" class="btn btn-green">View Reports</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Settings</h5>
-                            <p class="card-text">Update system settings.</p>
-                            <a href="#" class="btn btn-green">Go to Settings</a>
-                        </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                        <i class="fa-regular fa-file-powerpoint"></i>
+                            Prescriptions</h5>
+                        <p class="card-text">Manage prescriptions here.</p>
+                        <a href="{{ route('admin.prescriptions.history') }}" class="btn btn-green">View Prescriptions</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 @endsection

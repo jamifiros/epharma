@@ -12,7 +12,7 @@ use App\Models\MedicineIntake;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\GuardianAlertMail;
+use App\Mail\GuardianMail;
 use App\Jobs\SendLowStockEmail;
 
 use Illuminate\Support\Facades\Log;
@@ -182,6 +182,37 @@ public function addPrescription(Request $request)
     ], 201);
 }
 
+public function viewPrescriptions()
+{
+    // Get the authenticated user's ID
+    $userId = Auth::id();
+
+    // Fetch prescriptions for the authenticated user
+    $prescriptions = Prescription::where('userid', $userId)->get();
+
+    // Check if the user has any prescriptions
+    if ($prescriptions->isEmpty()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No prescriptions found for this user.',
+        ], 404);
+    }
+
+    // Add full image URL to each prescription
+    foreach ($prescriptions as $prescription) {
+        // Assuming the image path is stored as 'assets/prescriptions/p1.jpg'
+        $prescription->image_url = asset($prescription->image);
+    }
+
+    // Return prescriptions with full image URLs as a JSON response
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Prescriptions retrieved successfully.',
+        'data' => $prescriptions,
+    ], 200);
+}
+
+
 public function deletePrescription($prescriptionId)
 {
     // Get the authenticated user
@@ -229,6 +260,7 @@ public function deletePrescription($prescriptionId)
         ], 500);
     }
 }
+
 public function viewMedicines()
 {
     // Get the authenticated user
@@ -297,142 +329,14 @@ public function viewMedicines()
 
 
 
-
-// public function viewMedicines()
-// {
-//     // Get the authenticated user
-//     $user = Auth::user();
-
-//     // Check if the user exists
-//     if (!$user) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'User not found',
-//         ], 404);
-//     }
-
-//     // Get the prescriptions for the authenticated user
-//     $prescriptions = $user->prescriptions()->with('medicines')->get(); // Get related medicines with prescriptions
-
-//     // Check if prescriptions exist
-//     if ($prescriptions->isEmpty()) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'No prescriptions found for the user',
-//         ], 404);
-//     }
-
-//     // Filter prescriptions with no medicines
-//     $prescriptionsWithMedicines = $prescriptions->filter(function ($prescription) {
-//         return $prescription->medicines->isNotEmpty();
-//     });
-
-//     // If no prescriptions have medicines, return an error response
-//     if ($prescriptionsWithMedicines->isEmpty()) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'your prescription is pending to add medicines',
-//         ], 404);
-//     }
-
-//     // Return the prescriptions with medicines
-//     return response()->json([
-//         'status' => 'success',
-//         'data' => $prescriptionsWithMedicines->values(), // Reset indices of the collection
-//     ], 200);
-// }
-
-
-public function addMedicineIntake(Request $request)
-{
-    \Log::info('add medicine intake hitted');
-    // Validate the incoming request for multiple medicine intake data
-    $validator = \Validator::make($request->all(), [
-        'medicines' => 'required|array',  // Validate that the 'medicines' field is an array
-        'medicines.*.medicine_id' => 'required|exists:medicines,id',  // Validate each medicine_id
-        'medicines.*.quantity' => 'required|integer',  // Validate the quantity for each medicine (min:1)
-    ]);
-
-    // If validation fails, log the errors and return a response
-    if ($validator->fails()) {
-        // Log the validation errors
-        Log::error('Validation error in addMedicineIntake', [
-            'errors' => $validator->errors()->toArray(),
-            'request_data' => $request->all()
-        ]);
-
-        // Return validation error response
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 422);  // HTTP status code for validation errors
-    }
-
-    // Get the authenticated user
-    $user = Auth::user();
-
-    // Initialize an empty array to hold successfully created intakes
-    $successfullyCreated = [];
-
-    // Loop through each medicine intake data
-    foreach ($request->medicines as $medicineData) {
-        // If the quantity is 0, skip processing this medicine intake
-        if ($medicineData['quantity'] == 0) {
-            continue;
-        }
-
-        // Find the medicine by its ID
-        $medicine = Medicine::find($medicineData['medicine_id']);
-
-        // Check if medicine exists
-        if (!$medicine) {
-            return response()->json([
-                'status' => 'error',
-                'message' => "Medicine with ID {$medicineData['medicine_id']} not found",
-            ], 404);
-        }
-
-        // Check if there is enough quantity of the medicine available
-        if ($medicine->total_count < $medicineData['quantity']) {
-            return response()->json([
-                'status' => 'error',
-                'message' => "Not enough stock for medicine ID {$medicineData['medicine_id']}",
-            ], 400);
-        }
-
-        // Create the medicine intake record
-        $medicineIntake = new MedicineIntake();
-        $medicineIntake->user_id = $user->id;  // Associate the medicine intake with the authenticated user
-        $medicineIntake->medicine_id = $medicineData['medicine_id'];  // Associate the medicine with the intake
-        $medicineIntake->count = $medicineData['quantity'];  // Set the quantity of the medicine taken
-        $medicineIntake->save();  // Save the intake record
-
-        // Decrease the available count of the medicine
-        $medicine->total_count -= $medicineData['quantity'];
-        $medicine->save();  // Save the updated medicine count
-
-        // Add the successfully created intake record to the array
-        $successfullyCreated[] = $medicineIntake;
-    }
-
-    // Return a success response
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Medicine intake records created successfully',
-        'data' => $successfullyCreated,
-    ], 201);
-}
-
 // public function addMedicineIntake(Request $request)
 // {
-//     \Log::info('hitted');
-    
+//     \Log::info('add medicine intake hitted');
 //     // Validate the incoming request for multiple medicine intake data
 //     $validator = \Validator::make($request->all(), [
 //         'medicines' => 'required|array',  // Validate that the 'medicines' field is an array
 //         'medicines.*.medicine_id' => 'required|exists:medicines,id',  // Validate each medicine_id
-//         'medicines.*.quantity' => 'required|integer',  // Validate the quantity for each medicine
+//         'medicines.*.quantity' => 'required|integer',  // Validate the quantity for each medicine (min:1)
 //     ]);
 
 //     // If validation fails, log the errors and return a response
@@ -497,17 +401,187 @@ public function addMedicineIntake(Request $request)
 //         // Add the successfully created intake record to the array
 //         $successfullyCreated[] = $medicineIntake;
 //     }
-
-//     // Dispatch the job to send the email
-//     SendLowStockEmail::dispatch($user, $successfullyCreated);
+    
 
 //     // Return a success response
 //     return response()->json([
 //         'status' => 'success',
-//         'message' => 'Medicine intake records created successfully and email notification queued',
+//         'message' => 'Medicine intake records created successfully',
 //         'data' => $successfullyCreated,
 //     ], 201);
 // }
 
+public function addMedicineIntake(Request $request)
+{
+    \Log::info('Add medicine intake process started.');
 
+    // Validate the incoming request for multiple medicine intake data
+    $validator = \Validator::make($request->all(), [
+        'medicines' => 'required|array',
+        'medicines.*.medicine_id' => 'required|exists:medicines,id',
+        'medicines.*.quantity' => 'required|integer|min:1',
+    ]);
+
+    if ($validator->fails()) {
+        \Log::error('Validation error in addMedicineIntake', ['errors' => $validator->errors()]);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    $user = Auth::user();
+    $successfullyCreated = [];
+
+    // Use a transaction for database operations
+    DB::beginTransaction();
+    try {
+        foreach ($request->medicines as $medicineData) {
+            $medicine = Medicine::find($medicineData['medicine_id']);
+
+            // Check stock availability
+            if ($medicine->total_count < $medicineData['quantity']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Not enough stock for medicine ID {$medicineData['medicine_id']}",
+                ], 400);
+            }
+
+            // Create intake record and update stock
+            $medicineIntake = new MedicineIntake([
+                'user_id' => $user->id,
+                'medicine_id' => $medicine->id,
+                'count' => $medicineData['quantity'],
+            ]);
+            $medicineIntake->save();
+
+            $medicine->total_count -= $medicineData['quantity'];
+            $medicine->save();
+
+            $successfullyCreated[] = $medicineIntake;
+        }
+
+        // Commit the transaction
+        DB::commit();
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error in addMedicineIntake', ['error' => $e->getMessage()]);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to add medicine intake. Please try again.',
+        ], 500);
+    }
+
+    // Check for low stock medicines
+    $lowStockMedicines = [];
+
+    // Check if the user has prescriptions and medicines in those prescriptions
+    if ($user->prescriptions) {
+        foreach ($user->prescriptions as $prescription) {
+            foreach ($prescription->medicines as $medicine) {
+                // Calculate the per-day requirement
+                $perDay = ($medicine->morning ? 1 : 0) +
+                          ($medicine->afternoon ? 1 : 0) +
+                          ($medicine->evening ? 1 : 0) +
+                          ($medicine->night ? 1 : 0);
+
+                // If the total count is less than 2 times the per-day requirement, consider it low stock
+                if ($perDay > 0 && $medicine->total_count < (2 * $perDay)) {
+                    $lowStockMedicines[] = $medicine;
+                }
+            }
+        }
+    } else {
+        \Log::warning('No prescriptions found for user', ['user_id' => $user->id]);
+    }
+
+    // If low stock medicines are found, send the email
+    if (!empty($lowStockMedicines)) {
+        $guardianMail = $user->userDetails->guardian_email ?? null;
+
+        if ($guardianMail) {
+            $emailData = [
+                'user_name' => $user->name,
+                'low_stock_medicines' => $lowStockMedicines,
+            ];
+
+            // Log the email data
+            \Log::info('Preparing to send low stock email', [
+                'user_name' => $user->name,
+                'low_stock_medicines' => $lowStockMedicines,
+            ]);
+
+            try {
+                // Send the email
+                Mail::to($guardianMail)->send(new GuardianMail($emailData));
+                \Log::info('Low stock email sent successfully to guardian', ['email' => $guardianMail]);
+            } catch (\Exception $e) {
+                // Log the error
+                \Log::error('Error sending low stock email', [
+                    'error_message' => $e->getMessage(),
+                    'guardian_email' => $guardianMail,
+                    'user_name' => $user->name,
+                ]);
+            }
+        } else {
+            \Log::warning('Guardian email not found for user', ['user_id' => $user->id]);
+        }
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Medicine intake records created successfully',
+        'data' => $successfullyCreated,
+    ], 201);
+}
+
+
+public function notifyGuardian()
+{
+    $user = Auth::user(); // Get the authenticated user
+    $guardianMail = $user->userDetails->guardian_email;
+
+
+    $emailData = [
+        'user_name' => $user->name,
+        'low_stock_medicines' => [
+            (object) ['name' => 'Paracetamol', 'total_count' => 2],
+            (object) ['name' => 'Ibuprofen', 'total_count' => 1],
+        ],
+    ];
+
+   
+    
+    try {
+        // Send the email
+        Mail::to($guardianMail)->send(new GuardianMail($emailData));
+
+        // Log success
+        Log::info('Low stock email sent successfully', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'guardian_email' => $guardianMail,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Low stock alert email sent successfully.',
+        ], 200);
+    } catch (\Exception $e) {
+        // Log the error
+        Log::error('Error sending low stock email', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'guardian_email' => $guardianMail,
+            'error_message' => $e->getMessage(),
+        ]);
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to send email.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
 }

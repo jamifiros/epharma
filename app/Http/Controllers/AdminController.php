@@ -7,10 +7,18 @@ use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\Prescription;
 use App\Models\Medicine;
+use App\Models\MedicineIntake;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    public function dashboard()
+{
+
+    // Pass the data to the view
+    return view('dashboard');
+}
+
     public function index()
     {
         // Fetch all users with the role 'user' from the users table
@@ -75,6 +83,14 @@ class AdminController extends Controller
         }
     }
 
+    public function allMedicines()
+{
+    // Fetch all medicines with their related prescription and user data
+    $medicines = Medicine::with('prescription.user')->get();
+
+    // Pass the data to the view
+    return view('Allmedicines', compact('medicines'));
+}
     public function showPrescriptions()
     {
         // Fetch prescriptions with a status of 0 and their related user data
@@ -173,5 +189,24 @@ public function prescriptions($id)
     // Pass the prescriptions to the view
     return view('userPrescriptions', compact('prescriptions'));
 }
+
+public function showUserMedicines($userId)
+{
+    // Fetch the user along with their prescriptions and medicines
+    $user = User::with('prescriptions.medicines')->findOrFail($userId);
+
+    // Check if the user has prescriptions and medicines in those prescriptions
+    $medicines = [];
+    foreach ($user->prescriptions as $prescription) {
+        foreach ($prescription->medicines as $medicine) {
+            $medicines[] = $medicine;
+        }
+    }
+
+    // Return the data to the view
+    return view('usermedicines', compact('user', 'medicines'));
+}
+
+
 
 }

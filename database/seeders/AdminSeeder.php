@@ -17,13 +17,6 @@ class AdminSeeder extends Seeder
             'role' => 'admin',    // Assuming 'role' identifies user type
         ]);
 
-        User::create([
-            'name' => 'testuser',
-            'email' => 'test@gmail.com',
-            'password' => Hash::make('test123'), // Securely hash the password
-            'role' => 'user',    // Assuming 'role' identifies user type
-        ]);
-
        
     }
 }

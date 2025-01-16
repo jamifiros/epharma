@@ -11,7 +11,7 @@
             <div class="card-body">
                     <div class="col-md-4">
                         <!-- Display ID Proof Image -->
-                        <img src="{{ asset($userDetails->idproof) }}" class="img-fluid" alt="ID Proof Image">
+                        <img src="{{ asset($userDetails->idproof) }}" class="img-fluid" alt="ID Proof Image" style="height:200px;width:300px">
                     </div>
                     <div class="col-md-8">
                         <!-- Display User Details -->
@@ -25,7 +25,7 @@
                     </div>
             </div>
             <div class="card-footer text-right">
-            <a href="" class="btn btn-primary">view medicine intake</a>
+            <a href="{{route('admin.user.medicines',$userDetails->userid)}}" class="btn btn-primary">view medicines</a>
                 <a href="{{route('admin.user.prescriptions',$userDetails->userid)}}" class="btn btn-success">view prescriptions history</a>
                 <!-- Delete Button -->
                 <form action="{{ route('admin.userdetails.destroy', $userDetails->userid) }}" method="POST" style="display:inline;">

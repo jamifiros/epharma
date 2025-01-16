@@ -29,8 +29,8 @@ Route::middleware(['auth', 'role:admin']) // Ensure only authenticated users wit
     ->group(function () {
         
         // Admin dashboard route
-        Route::get('/dashboard', function () {return view('dashboard');})->name('dashboard');
-        // Users route, managed by AdminController
+        // Route::get('/dashboard', function () {return view('dashboard');})->name('dashboard');
+        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/users', [AdminController::class, 'index'])->name('users');
         Route::get('/user/{id}/details', [AdminController::class, 'show'])->name('userdetails.show');
         Route::delete('/user/{id}/details', [AdminController::class, 'destroy'])->name('userdetails.destroy');
@@ -40,4 +40,7 @@ Route::middleware(['auth', 'role:admin']) // Ensure only authenticated users wit
         Route::get('prescriptions/history', [AdminController::class, 'showPrescriptionsHistory'])->name('prescriptions.history');
         Route::get('/medicines/show/{prescription}', [AdminController::class, 'showMedicines'])->name('medicines.show');
         Route::get('/user/prescriptions/{id}',[AdminController::class,'prescriptions'])->name('user.prescriptions');
+        Route::get('/user/medicines/{id}',[AdminController::class,'showUserMedicines'])->name('user.medicines');
+        Route::get('/medicines', [AdminController::class, 'allMedicines'])->name('medicines');
+
     });

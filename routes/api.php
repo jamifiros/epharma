@@ -30,11 +30,13 @@ Route::post('/register', [ApiController::class, 'register']);
 Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
     Route::post('/logout', [ApiController::class, 'logout']);
     Route::post('/prescriptions', [ApiController::class, 'addPrescription']);
+    Route::get('/prescriptions/view', [ApiController::class, 'viewPrescriptions']);
+
     Route::get('/medicines', [ApiController::class, 'viewMedicines']);
     Route::post('/medicine-intake', [ApiController::class, 'addMedicineIntake']);
-    Route::delete('/prescription/{id}', [ApiController::class, 'deletePrescription']);
+    Route::delete('/delete/{id}', [ApiController::class, 'deletePrescription']);
 
-    Route::post('/email', [EmailController::class, 'Email']);
+    Route::post('/email', [ApiController::class, 'notifyGuardian']);
 });
 
 
