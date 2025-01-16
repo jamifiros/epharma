@@ -39,6 +39,7 @@ dependencies:
   dio:
   flutter_spinkit: 
   intl:
+  quickalert: 
 
 dev_dependencies:
   flutter_test:

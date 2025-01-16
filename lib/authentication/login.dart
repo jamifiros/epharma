@@ -119,6 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     loginApi(_emailController.text, _passwordController.text,
                         context);
+                    // fetchPrescriptions();
                   },
                   child: Text("Login"),
                   style: ElevatedButton.styleFrom(

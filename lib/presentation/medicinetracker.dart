@@ -167,7 +167,7 @@ class _PatientMedicineTrackerState extends State<PatientMedicineTracker> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
+        _errorMessage = "Currently No medicine available";
         _medicines = [];
       });
       print("Error fetching medicines: $e");
@@ -211,20 +211,42 @@ class _PatientMedicineTrackerState extends State<PatientMedicineTracker> {
         'Authorization': 'Bearer $token',
       };
 
-      final requestData = _medicines.map((medicine) {
-        int consumedCount = medicine.countConsumedTimes();
-        return {
-          'medicine_id': medicine.id,
-          'quantity': consumedCount,
-        };
-      }).toList();
+      // Filter medicines to include only those with sufficient stock and consumed times
+      final requestData = _medicines
+          .where((medicine) =>
+              !medicine.isOutOfStock) // Exclude out-of-stock medicines
+          .map((medicine) {
+            int consumedCount = medicine.countConsumedTimes();
+            return {
+              'medicine_id': medicine.id,
+              'quantity': consumedCount,
+            };
+          })
+          .where((data) =>
+              (data['quantity'] ?? 0) >
+              0) // Ensure quantity is not null and greater than 0
+          .toList();
 
-      final response = await dio
-          .post("$baseUrl/medicine-intake", data: {'medicines': requestData});
+      if (requestData.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No medicines to submit.")),
+        );
+        setState(() {
+          _isSubmitting = false;
+        });
+        return;
+      }
+
+      final response = await dio.post(
+        "$baseUrl/medicine-intake",
+        data: {'medicines': requestData},
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Data submitted successfully.")));
+          SnackBar(content: Text("Data submitted successfully.")),
+        );
+        Navigator.pop(context);
       } else {
         throw Exception("Failed to submit consumption data.");
       }
