@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->id(); // Primary Key
             $table->unsignedBigInteger('prescription_id'); // Foreign Key to prescriptions table
-            $table->string('medicine_name'); // Medicine name
+            $table->unsignedBigInteger('medicine_id'); 
             $table->boolean('morning')->default(false); // Morning dose
             $table->boolean('afternoon')->default(false); // Afternoon dose
             $table->boolean('evening')->default(false); // Evening dose
@@ -25,6 +25,8 @@ return new class extends Migration
 
             // Foreign Key Constraint
             $table->foreign('prescription_id')->references('id')->on('prescriptions')->onDelete('cascade');
+            $table->foreign('medicine_id')->references('id')->on('stocks');
+
         });
     }
 

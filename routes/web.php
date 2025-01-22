@@ -42,5 +42,8 @@ Route::middleware(['auth', 'role:admin']) // Ensure only authenticated users wit
         Route::get('/user/prescriptions/{id}',[AdminController::class,'prescriptions'])->name('user.prescriptions');
         Route::get('/user/medicines/{id}',[AdminController::class,'showUserMedicines'])->name('user.medicines');
         Route::get('/medicines', [AdminController::class, 'allMedicines'])->name('medicines');
-
+        Route::get('/stocks', [AdminController::class, 'allStocks'])->name('stocks');
+        Route::post('/stocks/create', [AdminController::class, 'createStocks'])->name('stocks.create');
+        Route::post('/stocks/{id}/details/update', [AdminController::class, 'updateStockDetails'])->name('stocks.details.update');
+        Route::get('/admin/stocks/delete/{id}', [AdminController::class, 'destroyStocks'])->name('stocks.delete');
     });

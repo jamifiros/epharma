@@ -24,8 +24,8 @@
             <tbody>
                 @foreach ($prescription->medicines as $medicine)
                     <tr>
-                        <td>{{ $medicine->medicine_name }}</td>
-                        <td>{{ $medicine->morning ? 1 : 0 }}</td>
+                    <td>{{ $medicine->stock->medicine_name}}</td>
+                    <td>{{ $medicine->morning ? 1 : 0 }}</td>
                         <td>{{ $medicine->afternoon ? 1 : 0 }}</td>
                         <td>{{ $medicine->evening ? 1 : 0 }}</td>
                         <td>{{ $medicine->night ? 1 : 0 }}</td>

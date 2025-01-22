@@ -16,7 +16,12 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('admin123'), // Securely hash the password
             'role' => 'admin',    // Assuming 'role' identifies user type
         ]);
-
+        User::create([
+            'name' => 'testuser',
+            'email' => 'test@epharma.com',
+            'password' => Hash::make('test123'), // Securely hash the password
+            'role' => 'user',    // Assuming 'role' identifies user type
+        ]);
        
     }
 }

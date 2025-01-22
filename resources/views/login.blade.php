@@ -49,11 +49,11 @@
                 @csrf
                     <div class="mb-3">
                         <label for="username" class="form-label">Email </label>
-                        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+                        <input type="email" class="form-control" name="email" placeholder="Enter your email" value="admin@epharma.com" required>
                     </div>
                     <div class="mb-5">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+                        <input type="password" class="form-control" name="password" placeholder="Enter your password" value="admin123" required>
                     </div>
                   
                     <button type="submit" class="btn btn-green w-100 mb-2">Login</button>

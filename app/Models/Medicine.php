@@ -23,7 +23,7 @@ class Medicine extends Model
      */
     protected $fillable = [
         'prescription_id',
-        'medicine_name',
+        'medicine_id',
         'morning',
         'afternoon',
         'evening',
@@ -46,5 +46,11 @@ class Medicine extends Model
 {
     return $this->hasMany(MedicineIntake::class);
 }
+
+public function stock()
+{
+    return $this->belongsTo(Stock::class, 'medicine_id', 'id');
+}
+
 
 }

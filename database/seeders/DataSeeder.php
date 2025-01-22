@@ -16,11 +16,11 @@ class DataSeeder extends Seeder
     {
         UserDetails::create([
             'userid' => 2, // Assuming this corresponds to the user's ID
-            'guardian_name' => 'Guardian One',
-            'guardian_email' => 'guardian1@example.com',
-            'idproof' => 'assets/idproofs/id1.webp',
-            'place' => 'Place One',
-            'district' => 'District One',
+            'guardian_name' => 'test Guardian',
+            'guardian_email' => 'jamifirosk@gmail.com',
+            'idproof' => 'assets/idproofs/id1.png',
+            'place' => 'test place',
+            'district' => 'test District',
             'mobile_no' => '1234567890',
         ]);
 

@@ -113,6 +113,7 @@
         <a href="{{route('admin.prescriptions')}}">New Prescriptions <i class="fa-solid fa-caret-right"></i></a>
         <a href="{{route('admin.prescriptions.history')}}">Prescriptions History <i class="fa-solid fa-caret-right"></i></a>
         <a href="{{route('admin.medicines')}}">Medicines History<i class="fa-solid fa-caret-right"></i></a>
+        <a href="{{route('admin.stocks')}}">Stocks & Details<i class="fa-solid fa-caret-right"></i></a>
         <a href="{{route('logout')}}" class=" btn btn-outline-light mx-5">Logout <i class="fa-solid fa-power-off"></i></a>
     </div>
 

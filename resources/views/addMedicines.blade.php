@@ -19,32 +19,38 @@
                 @csrf
                 <div class="container-fluid">
                     <h3>Add Medicines</h3>
-
                 </div>
                 <div id="medicineFormsContainer" style="height: 400px; overflow-y: auto; padding: 10px;">
                     <!-- Initial Medicine Form -->
                     <div class="medicine-form card p-3 mb-3">
                         <div class="mb-3">
                             <label for="medicineName" class="form-label">Medicine Name</label>
-                            <input type="text" class="form-control" name="medicine_name[]"
-                                placeholder="Enter Medicine Name" required>
+                            <select class="form-control" name="medicine_id[]" required>
+                                @if($stocks->isNotEmpty())
+                                    @foreach($stocks as $stock)
+                                        <option value="{{ $stock->id }}" @if($stock->stockdetails->quantity < 1)
+                                        disabled @endif>
+                                            {{ $stock->medicine_name }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option disabled>--no medicines in stock--</option>
+                                @endif
+                            </select>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Regime</label><br>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="regime[morning][]"
-                                    value="morning">
+                                <input class="form-check-input" type="checkbox" name="regime[morning][]" value="morning">
                                 <label class="form-check-label">Morning</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="regime[afternoon][]"
-                                    value="afternoon">
+                                <input class="form-check-input" type="checkbox" name="regime[afternoon][]" value="afternoon">
                                 <label class="form-check-label">Afternoon</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="regime[evening][]"
-                                    value="evening">
+                                <input class="form-check-input" type="checkbox" name="regime[evening][]" value="evening">
                                 <label class="form-check-label">Evening</label>
                             </div>
                             <div class="form-check form-check-inline">
@@ -52,9 +58,10 @@
                                 <label class="form-check-label">Night</label>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <label for="days" class="form-label">Days</label>
-                            <input type="number" class="form-control" name="days[]" placeholder="days" required>
+                            <input type="number" class="form-control" name="days[]" placeholder="Days" required>
                         </div>
 
                         <div class="mb-3">
@@ -72,7 +79,7 @@
                         + Add more Medicine
                     </button>
                 </div>
-                <button type="submit" class="btn btn-success w-100 m-3 px-5">save</button>
+                <button type="submit" class="btn btn-success w-100 m-3 px-5">Save</button>
             </form>
         </div>
     </div>

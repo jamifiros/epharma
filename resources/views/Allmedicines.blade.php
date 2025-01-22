@@ -12,7 +12,9 @@
         <table class="table table-responsive table-striped table-success">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
+                    <th>Prescription ID</th>
+                    <th>User Name</th>
                     <th>Medicine Name</th>
                     <th>Morning</th>
                     <th>Afternoon</th>
@@ -20,23 +22,22 @@
                     <th>Night</th>
                     <th>Timing</th>
                     <th>Total Count</th>
-                    <th>Prescription ID</th>
-                    <th>User Name</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($medicines as $medicine)
                     <tr>
                         <td>{{ $medicine->id }}</td>
-                        <td>{{ $medicine->medicine_name }}</td>
-                        <td>{{ $medicine->morning ? 'Yes' : 'No' }}</td>
-                        <td>{{ $medicine->afternoon ? 'Yes' : 'No' }}</td>
-                        <td>{{ $medicine->evening ? 'Yes' : 'No' }}</td>
-                        <td>{{ $medicine->night ? 'Yes' : 'No' }}</td>
-                        <td>{{ $medicine->timing }}</td>
-                        <td>{{ $medicine->total_count }}</td>
                         <td>{{ $medicine->prescription_id }}</td>
                         <td>{{ $medicine->prescription->user->name ?? 'Unknown' }}</td>
+                        <td>{{ $medicine->stock->medicine_name }}</td>
+                        <td>{{ $medicine->morning ? '1' : '0' }}</td>
+                        <td>{{ $medicine->afternoon ? '1' : '0'  }}</td>
+                        <td>{{ $medicine->evening ? '1' : '0' }}</td>
+                        <td>{{ $medicine->night ?  '1' : '0'  }}</td>
+                        <td>{{ $medicine->timing }}</td>
+                        <td>{{ $medicine->total_count }}</td>
+                       
                     </tr>
                 @endforeach
             </tbody>
